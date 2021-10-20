@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup</title>
+    <style>
+#signup-form{
+    width: 20px;
+}
+input{
+    margin-top: 5px;
+}
+#signup{
+    box-sizing: border-box;
+    /*border: 1px solid black;*/
+    padding: 30px;
+    width: 350px;
+    position: relative;
+    top: 100px;
+    left: 550px;
+    box-shadow: 0 20px 20px 0  rgba(0,0,0, .4);
+}
+    </style>
+</head>
+<body>
+    <button ><a href="mostpopular.html">Back</a></button>  
+        <div id="signup">
+            <form onsubmit='signup(event)' id="signup-form">
+                <h1>Signup</h1>
+                <input type="text" id='name' placeholder="name" />
+                <input type="email" id='email' placeholder="email" />
+                <input type="password" id='password' placeholder="password" />
+                <input type="text" id='username' placeholder="username" />
+                <input type="number" id='mobile' placeholder="mobile" />
+                <input type="text" id='description' placeholder="description" />
+                <input type="submit" />
+              </form>
+      
+        
+
+       
+    </div>
+    <div id='print'></div>
+    <script>
+
+
+function signup(e){
+
+e.preventDefault()
+
+let form = document.getElementById('signup-form')
+
+let user_data = {
+
+    name:form.name.value,
+    email:form.email.value,
+   password:form.password.value,
+   username:form.username.value,
+   mobile:form.mobile.value,
+   description:form.description.value
+}
+//console.log('user_data:', user_data)
+
+
+user_data = JSON.stringify(user_data)
+
+fetch("https://masai-api-mocker.herokuapp.com/auth/register",{
+
+method:'POST',
+
+body:user_data ,
+
+headers:{
+    
+    'Content-Type':'application/json',
+
+    },
+  })
+.then ((res)=>{
+
+    return res.json()
+})
+.then((res)=>{
+   console.log(' res:',  res)
+})
+.catch((err)=>{
+    console.log('err:', err)
+})
+}
+//CORS unblock
+
+function fetchmyData(username,token){
+
+fetch(`https://masai-api-mocker.herokuapp.com/user/${username}`,{
+
+    headers:{
+        'Content-Type':'application/json',
+
+        Authorization: `Bearer ${token}` ,
+    },
+})
+.then((res)=>{
+    return res.json()
+})
+.then((res)=>{
+    console.log('res:', res)
+
+    //
+      append(res)
+   
+    //
+})
+.catch((err)=>{
+    console.log('err:', err)
+})
+}
+
+
+
+
+
+
+
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

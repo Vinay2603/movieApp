@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signin</title>
+    <style>
+#signup-form{
+    width: 20px;
+}
+input{
+    margin-top: 5px;
+}
+#login{
+    box-sizing: border-box;
+    /*border: 1px solid black;*/
+    padding: 30px;
+    width: 350px;
+    position: relative;
+    top: 100px;
+    left: 550px;
+    box-shadow: 0 20px 20px 0  rgba(0,0,0, .4);
+}
+    </style>
+</head>
+<body>
+   
+      <button ><a href="mostpopular.html">Back</a></button>  
+
+        <div id="login">
+            <form onsubmit='Login(event)' id="login-form">
+                <h1>Login</h1>
+                <input type="text" id='user' placeholder="username" />
+                <br/>
+                <input type="password" id='pass' placeholder="password" />
+               
+                <br/>
+                <input type="submit" />
+              </form>
+      
+        </div>
+    
+
+    <script>
+
+
+function Login(e){
+
+    e.preventDefault()
+
+
+    let form = document.getElementById('login-form')
+
+let user_data = {
+
+    username:form.user.value,
+   
+   password:form.pass.value,
+  
+}
+//console.log('user_data:', user_data)
+
+let data_to_send  =JSON.stringify(user_data)
+
+//console.log('data_to_send:', data_to_send) 
+
+fetch('https://masai-api-mocker.herokuapp.com/auth/login',{
+
+method:'POST',
+
+body:data_to_send,
+
+headers:{
+    
+    'Content-Type':'application/json',
+
+    },
+
+
+})
+.then((res)=>{
+    return res.json()
+})
+.then((res)=>{
+    console.log('res:', res)
+    fetchmyData(user_data.username,res.token)
+
+
+})
+.catch((err)=>{
+    console.log('err:', err)
+})
+
+}
+
+function fetchmyData(username,token){
+
+fetch(`https://masai-api-mocker.herokuapp.com/user/${username}`,{
+
+    headers:{
+        'Content-Type':'application/json',
+
+        Authorization: `Bearer ${token}` ,
+    },
+})
+.then((res)=>{
+    return res.json()
+})
+.then((res)=>{
+    console.log('res:', res)
+
+    //
+      append(res)
+   
+    //
+})
+.catch((err)=>{
+    console.log('err:', err)
+})
+}
+
+//1.spelling of data 
+//2.url need to be correct
+//3.body must be stringified
+//4.
+
+
+
+function append(localStorage_data){
+    if(localStorage.getItem('userName') === null){
+
+localStorage.setItem('userName', JSON.stringify([]));
+}
+
+
+
+
+let userName = JSON.parse(localStorage.getItem('userName'))
+
+userName.push(localStorage_data)
+
+localStorage.setItem('userName',JSON.stringify(userName))
+
+console.log('userName',userName)
+
+let p = JSON.parse(localStorage.getItem('userName'))   
+console.log(p)
+
+let print = document.getElementById('print')
+console.log(p[p.length-1].username[0])
+
+}
+
+
+
+
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

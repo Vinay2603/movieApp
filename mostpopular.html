@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Movies</title>
+    <style>
+  *{
+      box-sizing: border-box
+  }/*#373b69*/
+  body{
+      background-color: #22254b;
+      margin: 0px;
+  }
+  header{
+      padding:1%;
+      display: flex;
+      justify-content: flex-end;
+      background-color:#373b69 ;
+  }
+  .search{
+      background-color: transparent;
+      border: 2px solid #22254b ;
+      padding: .0% 1%;
+      font-size: 25px;
+      color: white;
+  }
+  .search:focus{
+      outline:0;
+      background-color: #22254b;
+
+  }
+  .search::placeholder{
+      color: #7378c5
+  }
+  #parent{
+      display: flex;
+      flex-wrap:wrap ;
+      justify-content: center;
+
+  }
+  #parent >div{
+      width: 300px;
+      margin:1%;
+      border-radius: 3px;
+      box-shadow: .2px 4px 5px rgba(0,0,0,0.1);
+      position: relative;
+      overflow: hidden;
+
+  }
+ img{
+    max-width: 100%;
+
+  }
+  
+ #overview{
+     position: absolute;
+     left: 0;
+     right: 0;
+     bottom: 0;
+     background-color: white;
+     padding: 1%;
+     max-height: 100%;
+     transform: translateY(101%);
+     transition: transform 0.3s ease-in;
+     
+ }
+#parent:hover {
+    transform: translateY(10);
+}
+#overview:hover{
+    transform: translateY(0);
+}
+#parent>div> div:nth-child(2){
+    color:white;
+    background-color: #373b69;
+}
+#searchmovie{
+   visibility: hidden;
+    width: 320px;
+    height: 326px;
+    overflow: auto;
+  /*  border: 1px solid black;*/
+    border-top: none;
+    position: absolute;
+    z-index: 1;
+    background-color: #22254b;
+}
+#searchmovie::-webkit-scrollbar{
+    width: 20px;
+}
+#searchmovie::-webkit-track{
+   border-radius: 10px;
+   background: #22254b;
+   box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+}
+#Img{
+    max-width:15%
+}
+#outdiv{
+    display: flex;
+    background-color: #373b69;
+    margin-bottom: 10px;
+   
+}
+
+#div2{
+    padding:5%;
+}
+#div2 >span:nth-child(2){
+    background-color: #22254b;
+    color: chartreuse;
+    padding: 2%;
+    border-radius: 3px;
+    font-weight: bold;
+}
+h1{
+    text-align: center;
+    color: white;
+}
+#div2sec{
+    color: white;
+    
+}
+#in1{
+    margin-right: 20px;
+   
+}
+.P{
+    color: white;
+    margin-right: 20px;
+    text-decoration-line: none; 
+}
+#print{
+    font-size: 32px;
+    color: white;
+    font-weight: 900;
+   
+}
+    </style>
+</head>
+<body>
+    <div>
+        
+    <header>
+       
+        <div id="in1">
+        <a href="signin.html" class="P"   >Signin </a>
+        <a href="signup.html" class="P" >Signup</a>
+    </div>
+    <form>
+        
+        <input type="text"  oninput="debounce(main,1000)" placeholder="search" id="search" class="search"/>
+        <div id= 'searchmovie'></div>
+    </form>
+</header>
+</div>
+<div id='print'></div>
+    <h1 id='mostPopular'>MOST POPULAR</h1>
+    <div id="parent">
+        
+    </div>
+    
+
+
+
+
+    <script>
+
+//Api === f21701fc4a88c7bc63f56ab3a818e0ba
+//search --- https://api.themoviedb.org/3/sdearch/movie?f21701fc4a88c7bc63f56ab3a818e0ba&query=${searchterm}
+//popularity ---https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=f21701fc4a88c7bc63f56ab3a818e0ba
+
+var Timerid;
+let container1 = document.getElementById('searchmovie')
+container = document.getElementById('parent')
+ // popular movies  
+async function popular(){
+    let res = await fetch(`https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&api_key=f21701fc4a88c7bc63f56ab3a818e0ba`) //discover Example 
+
+    let data= await res.json()
+
+    console.log('data:', data.results)
+appendpopular(data.results)
+
+}
+popular()
+
+
+function appendpopular(movies){
+//container.innerHTML = null
+    movies.forEach((movie)=>{
+
+    let div = document.createElement('div')
+
+    let div1 = document.createElement('div')
+
+    let img = document.createElement('img')
+    img.src = 'https://image.tmdb.org/t/p/w500'+movie.poster_path
+
+    let div2 = document.createElement('div')
+    div2.setAttribute('id','div2') 
+
+    let name = document.createElement('span')
+    name.innerText =   movie.title 
+
+    let imdbRating = document.createElement('span')
+    imdbRating.innerText = movie.vote_average
+
+    let div3 = document.createElement('div')
+
+    let overview = document.createElement('p')
+    overview.innerText =   movie.overview 
+    overview.setAttribute('id','overview')
+
+    div1.append(img)
+    div2.append(name,imdbRating)
+    div3.append(overview)
+
+    div.append(div1,div2,div3)
+
+    container.append(div)
+    })
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+//searched movies
+async function searchbar(movie_name){
+    try{
+    let res = await fetch(`http://www.omdbapi.com/?apikey=3c59be&s=${movie_name}`)
+
+    let data= await res.json()
+    console.log('data:', data)
+    return data
+    }catch(e){
+        console.log('e:', e)
+    }
+    
+}
+
+
+
+async function main(){
+ 
+    let name = document.getElementById('search').value
+
+    let res = await searchbar(`${name}`)
+
+
+    appendmovies(res.Search)
+   console.log('res:', res.Search)
+
+   tolocalstorage(res.Search)
+}
+
+function appendmovies(movies){
+     container1.innerHTML = null
+    if(movies === undefined){ 
+       return false
+   } 
+   
+movies.forEach((movie)=>{
+    //container.innerHTML = null
+
+   let div= document.createElement('div')
+   div.setAttribute('id','outdiv')
+   div.addEventListener('click',eventdiv)
+
+   let img = document.createElement('img')
+   img.src = movie.Poster
+   img.setAttribute('id','Img')
+
+   let name = document.createElement('p')
+   name.innerText = movie.Title
+
+   div.append(img,name)
+
+   container1.append(div)
+})
+}
+//var count=0
+/*
+if(count === 0){
+   let  searchmovie  =document.getElementById('searchmovie') 
+   searchmovie.style.visibility = 'hidden'
+}else{
+    let  searchmovie  =document.getElementById('searchmovie') 
+   searchmovie.style.visibility = 'visible'
+}
+
+*/
+
+function  debounce(func,delay){
+
+    
+
+if(Timerid){
+    clearTimeout(Timerid)
+}
+
+
+
+ Timerid = setTimeout(()=>{
+
+    func()
+
+},delay)
+
+
+}
+
+
+// single movie show on window
+function singlemovie(movie){
+    container.innerHTML = null
+
+    let mostPopular = document.getElementById('mostPopular')
+    mostPopular.style.visibility = 'hidden'
+
+    let div1 = document.createElement('div')
+    
+    let img = document.createElement('img')
+    img.src = movie.Poster
+
+    let div2 = document.createElement('div') 
+    div2.setAttribute('id','div2sec')
+
+    let name = document.createElement('p')
+     name.innerText = 'Title: '+movie.Title
+
+     let year = document.createElement('p')
+     year.innerText = 'Year: '+movie.Year 
+
+     let imdbID = document.createElement('p')
+     imdbID.innerText = 'imdbID: '+movie.imdbID
+
+   div1.append(img)
+
+   div2.append(name,year,imdbID)
+
+   container.append(div1,div2)
+}
+/**************************** this is to make search result appear on the screen******/
+
+function tolocalstorage(Searchresult){
+
+
+
+    if(localStorage.getItem('movieSearchResult') === null){
+
+localStorage.setItem('movieSearchResult', JSON.stringify([]));
+}
+
+
+
+
+let movieSearchResult = JSON.parse(localStorage.getItem('movieSearchResult'))
+
+movieSearchResult.push(Searchresult)
+
+localStorage.setItem('movieSearchResult',JSON.stringify(movieSearchResult))
+
+}
+
+
+
+
+
+
+function eventdiv(){
+
+     var click_result = event.srcElement.textContent
+    console.log(event.srcElement.textContent)
+
+let movieSearchResult = JSON.parse(localStorage.getItem('movieSearchResult'))
+let z = movieSearchResult[movieSearchResult.length-1]
+console.log('movieSearchResult',z)
+
+const myanswer = z.filter((el)=>{
+        return click_result == el.Title
+})
+  console.log('myanswer:', myanswer)
+
+
+//let finalmovie_data = localStorage.setItem('finalmovie_data', JSON.stringify(myanswer))
+
+   container.innerHTML = null
+
+   myanswer.forEach((el)=>{
+    let mostPopular = document.getElementById('mostPopular')
+    mostPopular.style.visibility = 'hidden'
+
+    let div1 = document.createElement('div')
+    
+    let img = document.createElement('img')
+    img.src = el.Poster
+
+    let div2 = document.createElement('div') 
+    div2.setAttribute('id','div2sec')
+
+    let name = document.createElement('p')
+     name.innerText = 'Title: '+el.Title
+
+     let year = document.createElement('p')
+     year.innerText = 'Year: '+el.Year 
+
+     let imdbID = document.createElement('p')
+     imdbID.innerText = 'imdbID: '+el.imdbID
+
+   div1.append(img)
+
+   div2.append(name,year,imdbID)
+
+   container.append(div1,div2)
+   })
+
+}
+
+
+/********************* name display on sign in **********/
+
+function append(){
+   
+
+
+
+
+
+   let p = JSON.parse(localStorage.getItem('userName'))   
+   console.log(p)
+   
+   let print = document.getElementById('print')
+   let heading = document.createElement('p')
+   
+   if(p[p.length-1].message ==  "Invalid token for user"){
+            return
+        
+   }else if(p[p.length-1].username !== 'undefined'){
+       heading.innerText = p[p.length-1].username
+       print.append(heading)
+       console.log(p[p.length-1].username[0])
+   }
+   
+   }
+   
+   append()
+
+
+
+   /**************** to make seachbar box disapear ****/Timerid
+/*
+   window.onload = function (){
+       var searchmovie = document.getElementById('searchmovie')
+       var search = document.getElementById('search')
+       search.onclick = function(event){
+        console.log('event.target.id :', event.target.id )
+         if(event.target.id !== 'searchmovie'){
+            searchmovie.style.display = 'block';
+         }
+         if(event.target.id !== 'search'){
+            searchmovie.style.display = 'none';
+         }
+
+      }
+ 
+ 
+    }
+*/
+
+    var search = document.getElementById('search')
+
+   search.addEventListener('onclick',visible)
+
+ function  visible(){
+    var searchmovie = document.getElementById('searchmovie') 
+    searchmovie.style.visibility= 'visible'
+   }
+
+    </script>
+</body>
+</html>
